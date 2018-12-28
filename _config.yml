@@ -1,7 +1,7 @@
 # Site settings
 title: BY ziye
 SEOTitle: 子夜的博客 | BY 子夜
-header-: img/post-bg-desk.jpg
+header-: img/post-bg-coffee.jpeg
 email: zzzzhaoziyeg@gmail.com
 description: "咸鱼翻身还是咸鱼"
 keyword: "BY, BY Blog, 子夜的博客, zhaoziye, 赵子夜, iOS, Apple, iPhone"
@@ -12,7 +12,7 @@ github_repo: "https://github.com/zhaoziyecode/zhaoziyecode.github.io.git" # you 
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
 sidebar-about-description: "Goals determine what you going to be!"
-sidebar-avatar: /img/avatar-m     # use absolute URL, seeing it's used in both `/` and `/about/`
+sidebar-avatar: img/avatar_m.jpg     # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
 
