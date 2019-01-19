@@ -54,7 +54,7 @@ tags:                               #标签
  abstract void lock();
 ```
 ##### 具体由其子类实现 而实现方式 分为FairSync 和 NoFairSync两种实现分别对应公平锁和非公平锁
-- 先来看公平锁 FairSync
+####公平锁 FairSync
 
 ```
         final void lock() {
@@ -131,7 +131,7 @@ private Node addWaiter(Node mode) {
         }
     }
 ```
-##### 写入队列之后会根据compareAndSetTail挂起线程
+- 写入队列之后会根据compareAndSetTail挂起线程
 
 ```
 final boolean acquireQueued(final Node node, int arg) {
@@ -159,7 +159,7 @@ final boolean acquireQueued(final Node node, int arg) {
         }
     }
 ```
-##### 获取上一个节点，判断上一个节点是否是头部节点，是就尝试加锁，如果获取锁失败或者上一个节点不是头部节点则会根据上一个节点的状态来进行处理shouldParkAfterFailedAcquire 状态如取消，等待等
+- 获取上一个节点，判断上一个节点是否是头部节点，是就尝试加锁，如果获取锁失败或者上一个节点不是头部节点则会根据上一个节点的状态来进行处理shouldParkAfterFailedAcquire 状态如取消，等待等
 
 ```
     private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
@@ -193,7 +193,7 @@ final boolean acquireQueued(final Node node, int arg) {
         return false;
     }
 ```
-##### 如果当前线程需要挂起则调用parkAndCheckInterrupt方法挂起线程 是调用LockSuppot.park()
+- 如果当前线程需要挂起则调用parkAndCheckInterrupt方法挂起线程 是调用LockSuppot.park()
 
 ```
     private final boolean parkAndCheckInterrupt() {
@@ -201,6 +201,46 @@ final boolean acquireQueued(final Node node, int arg) {
         return Thread.interrupted();
     }
 ```
+#### 非公平锁的获取
+- 公平锁与非公平锁的差异主要在获取锁：公平锁就相当于买票，后来的人需要排到队尾依次买票，不能插队。
+ 而非公平锁则没有这些规则，是抢占模式，每来一个人不会去管队列如何，直接尝试获取锁。
+
+```
+        final void lock() {
+            //直接尝试获取锁
+            if (compareAndSetState(0, 1))
+                setExclusiveOwnerThread(Thread.currentThread());
+            else
+                acquire(1);
+        }
+```
+- 还有一个区别就是非公平锁直接尝试获取锁，不需要判断队列中是否还有线程在等待
+
+```
+ final boolean nonfairTryAcquire(int acquires) {
+            final Thread current = Thread.currentThread();
+            int c = getState();
+            if (c == 0) {
+                //没有 !hasQueuedPredecessors() 判断
+                if (compareAndSetState(0, acquires)) {
+                    setExclusiveOwnerThread(current);
+                    return true;
+                }
+            }
+            else if (current == getExclusiveOwnerThread()) {
+                int nextc = c + acquires;
+                if (nextc < 0) // overflow
+                    throw new Error("Maximum lock count exceeded");
+                setState(nextc);
+                return true;
+            }
+            return false;
+        }
+```
+
+##### 锁的释放
+
+
 
 
 
